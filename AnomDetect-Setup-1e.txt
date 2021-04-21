@@ -1,0 +1,429 @@
+Updated : 22-Mar-2021 by Craig Shallahamer, craig@orapub.com
+Version : 1e
+Location: Craig's laptop
+
+Use this page at your and your company's own risk, not OraPub's. Craig and
+OraPub are in not responsible for what you type. If you agree with the
+above, then continue (at your own risk). If you don't agree, then please
+for all that is good, leave this page.
+
+
+Setting Up Your
+ML1 Anomaly Detection System
+In Both Your Training & Deployment Environments
+
+--------------------------------------------------------------------------
+YOUR OBJECTIVE
+--------------------------------------------------------------------------
+
+Objective:
+
+Our objective is to get the Anomaly Detection (AD) system running in both
+your Training and Deployment environments.
+
+All the files you need for this class are stored in your "class directory."
+I will explain what to do with these files below.
+
+The class directory will be something like:
+
+http://filebank.orapub.com/LVC/YourClassDirectory
+http://filebank.orapub.com/LVC/ML1-202103-super
+
+Ask Craig for the actual directory.
+
+
+---------------------------------------------------------
+Training & Deployment Environments
+---------------------------------------------------------
+
+The steps are nearly identical for both the Training and Deployment environments.
+If there is a difference, I specify the differences. And, at the bottom of this
+document, there are a few useful quick Deployment steps.
+
+-----
+Assumption:
+-----
+
+    1. Miniconda software has been installed.
+    2. Oracle Client software has been installed and tested.
+    3. You have access to an Oracle database (connect and select "v$sysmetric")
+    
+    If you have not done the above steps, STOP. Go back and do them as outlined here:
+
+        https://www.orapub.com/ml-envir
+        http://filebank.orapub.com/ML-projects/Creating-ML-Envirs.txt
+
+-----
+Get to a command-line on your client machine
+-----
+
+    Open two terminals; one for the Training Environment and the other for Deployment
+    
+    Login as the Miniconda OS user.
+
+-----
+Determine your class project directory
+-----
+	It can be anything you want and does NOT need to be the same as the 
+	Miniconda Environment. For example, it could be one of the below perhaps:
+
+		/home/craig/op-ad-1
+		/Users/cshallah/op-ad-1
+
+-----
+Create your project directory
+-----
+
+		mkdir /Users/cshallah/op-ad-1
+
+-----
+Get into your project directory
+-----
+
+		cd /Users/cshallah/op-ad-1
+
+-----
+Create the two AD project subdirectories, charts2D and charts3D
+-----
+
+		mkdir charts2D
+		mkdir charts3D
+	
+-----
+Create and Activate a new Miniconda environment, anom-detect-1
+-----
+
+	Make sure you are in the "base" Miniconda environment before you run the below
+	command. Here is one way to check:
+	
+	    conda env list
+	
+	When you run the below "install" command, you will receive some "failed"
+	messages, but that's OK... just let it run.
+	
+		conda create --name anom-detect-1 python=3.8
+		conda activate anom-detect-1
+		conda install ConfigParser scikit-learn matplotlib cx_oracle numpy pandas jupyter 	
+
+-----
+Get Anomaly Detection Files
+-----
+
+	Place all the class files into your project directory. There are a number of ways to
+	do this, including using the "wget" command. Do whatever is easiest for you.
+	
+	Here are the files and there URL:
+	
+        AnomDect-1.ipynb    <-- Project notebook
+        AnomDect-1.py       <-- Project pure Python code
+        AnomDetect_DB.py    <-- Oracle DB Connection settings
+        AnomDetect_Email.py <-- Alert email settings
+        AnomDetect.cfg      <-- AD Configuration parameters
+        quick_restart-1.csv <-- sample quick restart file (may not need/want)
+	
+		http://filebank.orapub.com/LVC/ML1-202103-super/AnomDetect-1.ipynb
+		http://filebank.orapub.com/LVC/ML1-202103-super/AnomDetect-1.py
+		http://filebank.orapub.com/LVC/ML1-202103-super/AnomDetect_DB.py
+		http://filebank.orapub.com/LVC/ML1-202103-super/AnomDetect_Email.py
+		http://filebank.orapub.com/LVC/ML1-202103-super/AnomDetect.cfg
+		http://filebank.orapub.com/LVC/ML1-202103-super/quick_restart-1.csv
+		
+	Ensure the file extensions are correct. Sometimes your OS will attach a
+	".txt" at the end of the Notebook file.	
+
+-----
+Check SQLNet connection from your client to your database server
+-----
+    
+    If you need the Wallet zip file, here is the URL:
+    
+        http://filebank.orapub.com/ML-projects/Wallet_DB20210112.zip
+    
+    * For both Training and Deployment environments *
+    
+    To check your SQL*Net connection:
+    
+        Use you already open terminal
+        
+        cd /Users/cshallah/op-ad-1
+        conda env list
+        conda activate anom-detect-1
+	
+	Set your SQLNet environment:
+	
+		# This works for my environment
+		export oic=~/Orainstantclient_19_8
+		export PATH=$oic:$PATH
+		export DYLD_LIBRARY_PATH=$oic
+		export TNS_ADMIN=~/OracleWallets/Wallet_DB20210112
+	
+	Test:
+	    Your "v$sysmetric" view may be different than what is shown below.
+	
+		sqlplus ml0001@db20210112_low   <-- 7902$*OPidjid
+
+		select count(*) from sys.gv_$con_sysmetric;
+
+	Exit sqlplus and get back to your OS command-line.
+
+
+-----
+Create Gmail Account For Email Alerts
+-----
+
+If you want to emails to be sent when an alert occurs, I HIGHLY recommend this
+URL. Not only does it explain how to setup your email for alerting, I follow
+the code pretty much 100% in my Python email sending functions.
+
+Go to this URL:
+
+    https://realpython.com/python-send-email/
+
+Go this this section, near the top:
+
+    Option 1: Setting up a Gmail Account for Development
+
+All you will need to do is click on the below links and do what it says.
+
+    Create a new Google account.
+    Turn Allow less secure apps to ON.
+
+I did this and it took something like 5 minutes... very easy.
+
+
+-----
+Start the Jupyter Notebook System
+-----
+
+    Only   do this step in your Training   environment.
+    Do NOT do this step in your Deployment environment.
+    
+    On the command-line, with you Miniconda environment activated and in your
+    project directory, enter:
+    
+        jupyter notebook
+
+-----
+Open all project files below
+-----
+
+    In your Training environment, open the files using Jupyter. It can edit both
+    Python and plain text files.
+    
+    In your Deployment environment, with the editor of your choice, like vi.
+
+    AnomDetect_DB.py
+    AnomDetect_Email.py
+    AnomDetect.cfg
+    AnomDect-1.py
+    AnomDect-1.ipynb
+    
+    quick_restart.csv  <-- ok to open
+    
+-----
+Adjust: AnomDetect_DB.py
+-----
+
+    This file contains the Oracle DB user connection details. Change as appropriate.
+
+-----
+Adjust: AnomDetect_Email.py
+-----
+
+    This file contains the email details for emailing anomaly alerts.
+    Change as appropriate.
+
+-----
+Adjust: AnomDetect.cfg
+-----
+
+    This file contains all the parameters for your AD system. When the system is
+    running, any change will quickly take affect.
+
+    The most important parameters are: 
+
+        oracle_perf_data_table_name   = sys.gv_$con_sysmetric
+        oracle_perf_data_where_clause = where 1=1
+
+    The above two parameter are used to build the SQL that the AD system repeatedly
+    submits to the Oracle DB. Building the SQL is very simple. Kind of like this:
+
+        select metric_name, metric_value
+        from   :oracle_perf_data_table_name
+        :oracle_perf_data_where_clause
+
+    Adjust the "table name" and "where clause" as appropriate. The default setting
+    works for the OraPub DB.
+
+-----
+Adjust: AnomDect-1.ipynb
+-----
+
+    Do this step, ONLY in your Training environment.
+    
+    This is the Anomaly Detection system in a Jupyter Notebook.
+
+    This is NOT used on your Deployment environment. But we use it all the time in
+    our Training environment.
+
+    No changes are necessary.  It should run "as is." However, throughout the class
+    and as you learn more and more, it is fine to make changes. There is always a
+    fresh copy for you.
+    
+-----
+Run: AnomDect-1.ipynb
+-----
+
+    Do this step, ONLY in your Training environment.
+    
+    On the Anomaly Detection note page, do :
+    
+        Kernel > Restart & Run All
+ 
+    Scroll to the bottom of the page and watch!
+
+    Congratulations! Your Training Environment is all set up.
+    
+    For your Deployment environment, there are a couple more things we need to.
+
+-----
+Adjust: AnomDect-1.py
+-----
+
+    This is an "export" of the Jupyter Notebook version.
+    
+    This is ONLY used in your Deployment environment and NEVER in your Training
+    environment. (Technically you can of course.)
+    
+    You will to run on this command-line (details below). You will need to change
+    three parameters. They are located near the top of the file.
+
+    Change the parameters as follows:
+
+        Testing    = False  # We are NOT testing... deployment!
+        InNotebook = False  # We are NOT running in a Notebook environment
+        CheckOnly  = False  # We are NOT checking... we are deploying!
+
+
+---------------------------------------------------------
+Deployment Environment *ONLY*
+---------------------------------------------------------
+
+In your Deployment environment, I expect that you will be on the OS command-line.
+
+Here are the steps, I quickly go through to check and then launch!
+
+-----
+Check to ensure there is not an existing AD system running.
+    If so, kill the process.
+
+		ps -eaf | grep python
+
+-----
+Activate your conda environment
+
+		conda activate anom-detect-1
+
+-----
+Edit AnomDect-1.py, AnomDetect.cfg, AnomDetect_DB.py and AnomDetect_Email.py
+
+    1. AnomDect-1.py. Probably the only change in AnomDect-1.py, near the top,
+			Testing    = False
+			InNotebook = False
+			CheckOnly  = False
+			
+	2. AnomDetect.cfg. Ensure the datasource and where clause is set correctly
+	        in the AnomDetect.cfg file. The most comment error is because the
+	        datasource is not correctly on Deployment. Remember, the configuration
+	        on both Training and Deployment may need to be altered.
+
+    3. AnomDect-DB.py. Probably no change after initial setup
+
+    4. AnomDect-Email.py. Probably no change after initial setup
+    
+            Use the following URL to help you get your gmail account and
+            the other setting details.
+            
+                https://realpython.com/python-send-email/
+    
+            However, check your AnomDetect.cfg file to ensure email alert is
+            properly enabled:
+            
+                alert_email             = True
+                alert_min_secs_between  = 900  <--- important
+                
+            This is probably what you want in the AnomDetect.cfg file.
+            
+                alert_email_force       = False
+                alert_email_wo_charts   = True
+                alert_email_w_charts    = True
+
+-----
+Ensure you have sub-directories
+
+    		charts2D
+	    	charts3D
+
+-----
+You may want to remove the, 
+
+		alertlog.txt file
+ 		charts2D/* files
+		charts3D/* files
+
+-----
+Verify your Oracle client environment variables and test connection
+
+		cat AnomDetect_DB.py
+		echo $TNS_ADMIN
+		sqlplus ml0001@db20210112_low
+
+-----
+AD System Oracle Connection Check
+
+		python ./AnomDetect-1.py check
+		
+	What you want to see is the output ending like,
+	
+	    Connection test result: True
+        Exiting clean
+
+-----
+Foreground Launch
+
+    Is it working? Watch it work, then break out.
+	
+		python -u ./AnomDetect-1.py
+
+	Check the charts2D, charts3D directories
+	Check the alert log
+	
+	If all good, you MAY want to remove the out.txt and alertlog.txt files:
+	
+	    rm out.txt alertlog.txt
+
+-----
+If all good, DEPLOY!!
+
+		nohup python -u ./AnomDetect-1.py >out.txt 2>out.txt &
+
+    You can do:
+    
+    Watch what is going by doing:
+    
+        tail -f out.txt
+        tail -f alertlog.txt
+
+That's it.
+    
+
+Helpful Miniconda Commands:
+----------------------
+
+conda list
+conda deactivate
+conda env list
+conda env remove --name anom-detect-1 
+
+
+--END.
