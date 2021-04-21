@@ -1,0 +1,773 @@
+
+Updated : 8-April-2021 by Craig Shallahamer, craig@orapub.com
+Version : 4i
+Location: http://filebank.orapub.com/ML-projects/Creating-ML-Envirs.txt
+
+Use this page at your and your company's own risk, not OraPub's. Craig and
+OraPub are in not responsible for what you type. If you agree with the
+above, then continue (at your own risk). If you don't agree, then please
+for all that is good, leave this page.
+
+The associated video is located here: https://www.orapub.com/ml-envir
+
+Welcome: video: 0:00 - 0:07
+ 
+--------------------------------------------------------------------------
+YOUR OBJECTIVE
+--------------------------------------------------------------------------
+ 
+video: 0:07 - 0:23
+ 
+Your objective is to get two ML environments setup; TRAINING and DEPLOYMENT.
+Each environment has the typical client and database server machines that
+communicate using SQL*Net.
+
+Important: You will essentially do all the below steps twice. Once for your
+Training environment and then again for your Deployment environment.
+
+This document is not about setting up the class Anomaly Detection System 
+project. Rather, it is about getting your ML environments set up, tested and 
+working. Once this is done, then it will a simple matter to get the class 
+project up and running!
+
+If you have any questions, email Craig at craig@orapub.com.
+
+--------------------------------------------------------------------------
+Table Of Contents
+--------------------------------------------------------------------------
+
+video: 0:23  - 0:36
+
+1. Pre-Install Checklist & Concepts
+
+2. Install Miniconda Software
+3. Create Miniconda ML Environment
+
+4. Install Oracle Client Software
+5. Determine Sysmetric Objective To Query
+6. Determine/Create Oracle DB Username To Use
+
+7. Connecting To Oracle Database In Python
+8. Work On A Project
+9. How To Uninstall Miniconda Software
+
+--------------------------------------------------------------------------
+1. Pre-Install Checklist & Concepts
+--------------------------------------------------------------------------
+
+video start: 0:36- 4:04
+
+In the video I describe the relationship between the host OS, Miniconda
+software, Miniconda environments and our ML projects.
+
+-----------------------------
+TRAINING SYSTEM
+
+TRAINING system comprises of a WORKSTATION (e.g., your PC) and connection
+to an active ORACLE DATABASE. SQL*Net is used for the connection. Both the
+workstation and the Oracle database only need to be available during your
+training/learning times. Your workstation must be able to download software
+from the internet.
+
+On your Training WORKSTATION, we will be using a browser based visual
+development environment, called Jupyter Notebook.
+
+Use this document to ensure you Training environment is setup and can both 
+connect and select data from Oracle... details below.
+
+-----------------------------
+DEPLOYMENT SYSTEM
+
+DEPLOYMENT system comprises of a CLIENT MACHINE and connection to an active
+ORACLE DATABASE. SQL*Net is used for the connection. Both the client and DB
+will need to be available 24/7 so data can be connected and anomalous
+activity can be detected. Your client machine must be able to download
+software from the internet.
+
+On your Deployment Client machine you will work 100% on the commandline. Only
+simple file edits are necessary.
+
+You will need the ability to transfer files from the internet and from your
+Training workstation into your Deployment client machine.
+
+Use this document to ensure you Deployment environment is setup and can both 
+connect and select data from Oracle... details below.
+
+-----------------------------
+"ACTIVE ORACLE DATABASE"
+
+If you don't have an active Oracle database to connect to, OraPub has a DB
+available that resides in the Oracle Cloud, which requires an Oracle wallet
+(which OraPub provides) to connect. But you must be able to connect from your
+client machine over the internet to get into the Oracle Cloud.
+
+For the TRAINING environment using OraPub's DB is fine. However, to gain
+true operational experience and to tune your anomaly detection system, your
+DEPLOYMENT environment should access one of your real active Oracle
+databases.
+
+Questions? Email Craig at craig@orapub.com
+
+
+--------------------------------------------------------------------------
+2. Install Miniconda Software
+--------------------------------------------------------------------------
+
+video: 4:04 - 14:46
+
+The ML framework is called Miniconda. We use Miniconda to create and manage 
+our ML environments. First you install the Miniconda software, then you can
+create one or more ML environments.
+
+Miniconda needs to be installed on both your Training machine (e.g. Windows 
+PC) and your Deployment client machine (e.g., Linux server).
+
+---------- How To Install Miniconda ----------
+
+	If you have Anaconda installed, consider removing it.
+	https://docs.anaconda.com/anaconda/install/uninstall/
+
+	------------------ BEGIN Windows & OS X Specifics ------------------
+
+	video: 5:50 - 8:14
+
+	A. Goto: https://docs.conda.io/en/latest/miniconda.html
+
+	B. Download and run the "installer" for your OS.
+
+	Chose Python 3
+
+	Don't add to environment path 
+
+	This will download, verify and perform the installation
+	You do NOT need to do any other install steps. The GUI
+	installer does everything.
+
+	C. Update miniconda.
+
+	Open a terminal window. On your command line you should see "base".
+	Enter:
+
+		conda update conda		<-- update conda
+
+	That's it!
+
+	On my Mac, the abbreviated output looked like this:
+
+	(base) cshallah@Craigs-MacBook-Pro ~ % conda update conda
+	Collecting package metadata (current_repodata.json): done
+	Solving environment:
+	done
+
+	## Package Plan ##
+	... Proceed ([y]/n)? y 
+	... Downloading and Extracting Packages 
+	...
+	Preparing transaction: done 
+	Verifying transaction: done 
+	Executing transaction: done
+
+	(base) cshallah@Craigs-MacBook-Pro ~ % conda env list
+	# conda environments:
+	# 
+	base                  *  /Users/cshallah/opt/miniconda3
+
+
+	------------------ END Windows & OS X Specifics ------------------
+
+
+	------------------ BEGIN Linux Specifics ------------------
+
+	video: 8:14 - 14:56
+
+	On Linux, first create a conda1 OS user to install Miniconda into. Here
+	is an example:
+
+	# groupadd conda 
+	# useradd -m conda4 -g conda -p conda4 -d /home/conda4 -m -s /bin/bash
+	# su - conda4
+	$ pwd
+	/home/conda4
+	$ exit
+
+	Login as conda4 OS user created above.
+
+	Download the installer .sh file 
+
+		Option #1: In Linux, if you can open a browser window: 
+
+			Go to install web page
+				https://docs.conda.io/en/latest/miniconda.html
+			Click to download 
+			Note where the file download location 
+
+		Option #2: If you are on the command-line: 
+			
+			Open a terminal window and login as conda1
+			Use wget to get the Miniconda .sh file: 
+
+			$ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+	In a conda4 terminal do:
+
+		cd to where you can see the .sh file, like a Downloads directory
+		chmod u+x Mini*.sh 
+		bash Miniconda3-latest-Linux-x86_64.sh  <-- take all the defaults, except these:
+		
+			Do you accept the license terms? [yes|no]
+			[no] >>> yes
+			
+			Do you wish the installer to initialize Miniconda3
+			by running conda init? [yes|no]  <--- enter "yes"
+		exit
+
+	Reopen a terminal and login as the conda4 OS user
+
+	If you do NOT see the "(base)" at your OS prompt, the conda related
+	environment have not been set. For example, in ubuntu linux using a
+	bash shell, there is a .bashrc file conda's home directory, but it was
+	not executed. The .bashrc file needs to be executed from the
+	.bash_profile, like this:
+
+	. ~/.bashrc
+
+	Then everything works fine. Log out and log in. Then you should see the
+	"(base)" on your OS prompt.
+
+	Update miniconda
+
+	Open a terminal window.
+	Login as the OS conda1 user.
+	On your command line you should see "base". 
+	Enter: 
+		conda update conda		<-- update conda
+
+	That's it.
+
+	------------------------ END Linux Specifics ------------------
+
+
+-------------------------------------------------------------------------
+3. Create Miniconda ML Environment
+-------------------------------------------------------------------------
+
+video: 14:56 - 21:08
+
+Once the Miniconda software has been installed on a machine (e.g., Windows 
+PC), we can create and manage possibly many Miniconda "environments." Once the 
+environment is created, you can "activate", "deactivate", "install" Python 
+packages and eventually "remove" the environment.
+
+You need to create this Miniconda environment on both your Training  workstation
+(e.g., Windows PC) and your Deployment client machine (e.g., Linux server).
+
+Follow these steps, and if you have any questions please contact me.
+
+A. If you are on Linux, login as the Miniconda software owner.
+
+B. Create a project directory.
+
+You can place it anywhere you wish. You can name it anything you wish. The 
+directory name does NOT need to be the same as the ML environment name.
+
+C. Change to your project directory.
+
+D. Accepting all the defaults, run these five Miniconda commands to create the
+ML environment.
+
+    conda create --name test01 python=3.8
+    conda env list
+    conda activate test01
+    conda env list 
+    conda install ConfigParser scikit-learn matplotlib cx_oracle numpy pandas jupyter
+
+On my Mac, the abbreviated output looked like this:
+
+	(base) cshallah@Craigs-MacBook-Pro ~ % conda env list
+	# conda environments:
+	# 
+	base                  *  /Users/cshallah/opt/miniconda3
+
+	(base) cshallah@Craigs-MacBook-Pro ~ % conda create --name test01 python=3.8 
+	Collecting package metadata (current_repodata.json): done
+	Solving environment: done 
+	...
+	## Package Plan ##
+	... 
+	The following NEW packages will be INSTALLED: 
+	... 
+	Proceed ([y]/n)? y
+
+	Preparing transaction: done 
+	Verifying transaction: done 
+	Executing transaction: done 
+	...
+	
+	% conda env list
+	# conda environments:
+	#
+	base                  *  /Users/cshallah/opt/miniconda3
+	test01                   /Users/cshallah/opt/miniconda3/envs/test01
+
+	(base) cshallah@Craigs-MacBook-Pro ~ % conda activate test01
+	(test01) cshallah@Craigs-MacBook-Pro ~ % conda env list
+	# conda environments:
+	# 
+	base                    /Users/cshallah/opt/miniconda3 
+	test01               *  /Users/cshallah/opt/miniconda3/envs/test01
+
+	(test01) cshallah@Craigs-MacBook-Pro ~ % conda install ConfigParser scikit-learn matplotlib cx_oracle numpy pandas jupyter
+	...
+	... Failed ...
+	Collecting package metadata (current_repodata.json): done
+	... Failed ...
+	Solving environment: done 
+	... 
+	Proceed ([y]/n)? y
+
+	Preparing transaction: done 
+	Verifying transaction: done 
+	Executing transaction: done 
+	(test01) cshallah@Craigs-MacBook-Pro ~ %
+
+
+Here are some useful Miniconda commands:
+
+conda env remove --name test01    <-- removes test01 environment
+                                      Project directory content not touched.
+                                      Try this... and then re-create test01
+conda env list                    <-- list all environments
+conda activate test01             <-- activates the test01 environment
+conda deactivate                  <-- deactivate current environment
+conda create --name abcdef python=3.8   <-- create environment abcdef
+
+
+-------------------------------------------------------------------------
+4. Install Oracle Client Software
+-------------------------------------------------------------------------
+
+video: 21:08 - 29:07
+
+I am assuming as Oracle DBAs, you can install Oracle Client software on
+a Windows or OS X enviornment.
+
+In the Linux section below, I install the both Oracle Client software and
+the Oracle Wallet used to connect to the OraPub database.
+
+Like most client programs (Toad, SQL*Plus), Python uses SQL*Net to connect
+to an Oracle Database.
+
+On both your Training workstation (e.g., Windows PC) and your Deployment
+client (e.g., Linux server), Oracle Client software must be installed
+and working.
+
+Here is the reference:
+
+https://www.oracle.com/database/technologies/instant-client.html
+
+--------------
+Linux Example
+--------------
+
+video: 21:08 - 23:40
+
+Here is what I did on an Ubuntu box that is one of my Anomaly Detectoion client
+machines.
+
+Remember, Miniconda has already been installed.
+login as the "conda" user, which in the case below is the OS user "seventhfloor".
+
+mkdir oracle
+cd oracle
+# The below URLs are always the most recent version of the software
+wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip
+wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-sqlplus-linuxx64.zip
+
+unzip instantclient-basiclite-linuxx64.zip
+unzip instantclient-sqlplus-linuxx64.zip
+ 
+--------------
+Oracle Wallet
+--------------
+
+video: 23:40 - 29:07
+
+Oracle Wallet Setup in a Linux (also OS X) environment. However, I also discuss the
+"wallet" stuff that is not OS specific in a section below.
+
+The wallet I am using is the wallet to connect to the OraPub DB. But the same process
+is used for any system's wallet.
+
+cd
+pwd
+mkdir -p OracleWallets/Wallet_DB20210112
+
+# Yes, there three subdirectories now: ~/oracle and a ~/OracleWallets and
+# ~/miniconda3
+
+cd OracleWallets/Wallet_DB20210112
+wget http://filebank.orapub.com/ML-projects/Wallet_DB20210112.zip
+unzip Wallet_DB20210112.zip
+pwd  # copy to then paste into sqlnet.ora
+vi sqlnet.ora  # update the directory entry, setting to this Wallet's directory
+cd
+
+export oic=~/oracle/instantclient_21_1
+export PATH=$oic:$PATH 
+export DYLD_LIBRARY_PATH=$oic 
+export LD_LIBRARY_PATH=$oic:$LD_LIBRARY_PATH
+export TNS_ADMIN=~/OracleWallets/Wallet_DB20210112
+which sqlplus
+
+vi setOraEnv.sh  <-- Add the above five exports
+Added to bottom of .profile or the .bash_profile
+. ./setOraEnv.sh
+
+logout of the OS and log back in to test the Oracle environment.
+
+logout and back in (password is shown near the bottom of Section 6 below):
+
+sqlplus ml0001@db20210112_low
+
+For the ML2 LVC, you can test with, (password is shown near the bottom of
+Section 6 below):
+
+sqlplus ml0002@db20210112_low
+
+
+-------------------------------------------------------------------------
+5. Determine Sysmetric Objective To Query
+-------------------------------------------------------------------------
+ 
+video: 29:07 - 30:11
+
+For this test project and actual Anomaly Detection System, you need to
+connect to an Oracle Database and query from an Oracle Sysmetric object,
+like v$sysmetric. For the ML2 LVC, you also need to query ASH data.
+
+There are potentially a number of different Sysmetric and ASH views you can query.
+You only need to access one that provides you with actual data. Some do not.
+
+Check to ensure when you SELECT, rows will be returned!!
+
+Depending on your environment, you may be selecting from:
+
+v$sysmetric
+v_$sysmetric
+sys.gv_$con_sysmetric
+... or something else
+
+And for the ML2 LVC,
+
+v$active_session_history
+v_$active_session_history
+sys.GV_$ACTIVE_SESSION_HISTORY
+sys.GV_$con_ACTIVE_SESSION_HISTORY
+... or something else
+
+-----------------------
+
+Be prepared that your Training and Deployment environments may be selecting
+from different Sysmetric and ASH views.
+
+Determine the Sysmetric and ASHs view(s) you will use. Seriously, make sure there
+are rows returned when you query the view.
+
+
+-------------------------------------------------------------------------
+6. Determine/Create Oracle DB Username To Use
+-------------------------------------------------------------------------
+
+video: 30:11 - 34:36
+
+For both your Training and Deployment environments, after the client software
+has been installed, you need to an Oracle Database user that can query
+the Sysmetric object.
+
+You can use an existing Oracle user (see below), create a new user (see below)
+or use an OraPub user which connects to a DB in the Oracle Cloud (see below).
+
+Once you know you can connect to an Oracle database and query from a
+Sysmetric object, go to the next section, "Connecting To Oracle Database
+In Python"
+
+----------
+An Existing Oracle User
+----------
+
+If you are connecting to one of your databases, the only permissions the
+Oracle user needs is to, connect, create session and select on the
+v$sysmetric-like object. And, for the ML2 LVC you will also need to select
+from an v$active_session_history-like object. Here is an example of what to do:
+
+A. In SQL*Plus, connect as sys, sysdba, admin or whatever works.
+
+B. Set the username and sysmetric object name defines.
+
+def uid=op1                             -- Change for your enironment
+def object1="v_$sysmetric"              -- Change for your enironment
+def object2="v_$active_session_history" -- Change for your enironment
+
+C. Run this SQL:
+
+grant create session to &uid; 
+grant select on '&object1' to &uid;
+grant select on '&object2' to &uid;
+
+
+----------
+Creating A New Oracle User
+----------
+
+The permissions can and should be very minimal. Here is an example of what
+to do:
+
+A. In SQL*Plus, connect as sys, sysdba, admin or whatever works.
+
+B. Set the username, password and sysmetric object name defines.
+
+def uid=op1                             -- Change for your enironment
+def pwd=thepassword                     -- Change for your enironment
+def object1="v_$sysmetric"              -- Change for your enironment
+def object2="v_$active_session_history" -- Change for your enironment
+
+C. Run this SQL:
+
+create user &uid identified by &pwd; 
+grant connect to &uid; 
+grant create session to &uid; 
+grant select on '&object1' to &uid;
+grant select on '&object2' to &uid;
+
+
+----------
+Use OraPub User And Connect To An OraPub DB
+----------
+
+video: 31:17 - 34:36
+ 
+If you need an Oracle DB to connect to, you can use one of OraPub's. It's
+in the Oracle Cloud so you will need to an Oracle Wallet. You can download
+the Wallet zip file here:
+
+http://filebank.orapub.com/ML-projects/Wallet_DB20210112.zip
+
+You will need to modify the wallet's sqlnet.ora file with the location
+where you place the wallet on your PC.
+
+Here are the connection details:
+
+For the ML1 LVC:
+user = "ml0001" 
+pw   = "7902$*OPidjid" 
+dsn  = "db20210112_low"
+
+For the ML2 LVC:
+user = "ml0002" 
+pw   = "5232)pi9OPqE" 
+dsn  = "db20210112_low"
+
+Don't forget to set your environment variables. Here's what I do:
+
+export oic=~/Orainstantclient_19_8 
+export PATH=$oic:$PATH 
+export DYLD_LIBRARY_PATH=$oic 
+export TNS_ADMIN=~/OracleWallets/Wallet_DB20210112
+
+Assuming you have sqlplus available, here's a quick way to test your
+environment:
+
+For the ML1 LVC:
+
+sqlplus ml0001@db20210112_low
+
+select count(*) from sys.gv_$con_sysmetric;
+
+For the ML2 LVC:
+sqlplus ml0002@db20210112_low
+
+select count(*) from sys.gv_$active_session_history;
+
+
+-------------------------------------------------------------------------
+7. Connecting To Oracle Database In Python
+-------------------------------------------------------------------------
+
+video: 34:36 - 41:38
+
+On both your Training workstation and Deployment client machine, you need
+to connect to Oracle from within Python.
+
+Reference:
+https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html
+
+Here is the raw code. Modify as appropriate for your environment.
+
+----------
+A. Open a terminal
+
+----------
+B. Activate your Miniconda environment
+
+conda activate test01
+
+----------
+C. Set your Oracle Client environment
+
+export oic=~/Orainstantclient_19_8 
+export PATH=$oic:$PATH 
+export DYLD_LIBRARY_PATH=$oic 
+export TNS_ADMIN=~/OracleWallets/Wallet_DB20210112
+which sqlplus
+
+----------
+B. Start Python:
+
+python
+
+----------
+C. At the Python command-line, enter the below. You will need to modify as
+appropriate. Also, you may need to copy and paste one line at a time.
+
+For the ML1 LVC, do:
+
+user='ml0001' 
+pw ='7902$*OPidjid' 
+dsn ='db20210112_low' 
+import cx_Oracle
+print('Connection (user pw dsn):', user, pw, dsn) 
+connection = cx_Oracle.connect(user, pw, dsn) 
+print('DB version:', connection.version)
+cursor = connection.cursor() 
+sql = "select metric_name from sys.gv_$con_sysmetric" 
+cursor.execute(sql) 
+print( cursor.fetchmany(5) )
+cursor.close() 
+connection.close()
+
+For the ML2 LVC, do:
+
+user='ml0002' 
+pw ='5232)pi9OPqE' 
+dsn ='db20210112_low' 
+import cx_Oracle
+print('Connection (user pw dsn):', user, pw, dsn) 
+connection = cx_Oracle.connect(user, pw, dsn) 
+print('DB version:', connection.version)
+cursor = connection.cursor() 
+sql = "select metric_name from sys.gv_$con_sysmetric" 
+cursor.execute(sql) 
+print( cursor.fetchmany(5) )
+sql = "select session_id, session_state from sys.gv_$active_session_history" 
+cursor.execute(sql) 
+print( cursor.fetchmany(10) )
+cursor.close() 
+connection.close()
+
+
+----------
+D. Here's what I see on my system for the ML1 LVC.
+
+(test01) cshallah@Craigs-MacBook-Pro ~ % conda deactivate
+(base) cshallah@Craigs-MacBook-Pro ~ % conda env list
+# conda environments:
+# #
+base                  *  /Users/cshallah/opt/miniconda3 
+test01                   /Users/cshallah/opt/miniconda3/envs/test01
+
+(base) cshallah@Craigs-MacBook-Pro ~ % conda activate test01  
+
+(test01) cshallah@Craigs-MacBook-Pro ~ % export oic=~/Orainstantclient_19_8 
+(test01) cshallah@Craigs-MacBook-Pro ~ % export PATH=$oic:$PATH 
+(test01) cshallah@Craigs-MacBook-Pro ~ % export DYLD_LIBRARY_PATH=$oic 
+(test01) cshallah@Craigs-MacBook-Pro ~ % export TNS_ADMIN=~/OracleWallets/Wallet_DB20210112 
+
+(test01) cshallah@Craigs-MacBook-Pro ~ % which sqlplus
+/Users/cshallah/Orainstantclient_19_8/sqlplus
+
+(test01) cshallah@Craigs-MacBook-Pro ~ % python
+Python 3.8.5 (default, Sep  4 2020, 02:22:02) 
+[Clang 10.0.0 ] :: Anaconda, Inc. on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> user='ml0001' 
+>>> pw ='7902$*OPidjid' 
+>>> dsn ='db20210112_low' 
+>>> import cx_Oracle
+>>> print('Connection (user pw dsn):', user, pw, dsn) 
+Connection (user pw dsn): ml0001 7902$*OPidjid db20210112_low
+>>> connection = cx_Oracle.connect(user, pw, dsn) 
+>>> print('DB version:', connection.version)
+DB version: 21.2.0.0.0
+>>> cursor = connection.cursor() 
+>>> sql = "select metric_name from sys.gv_$con_sysmetric" 
+>>> cursor.execute(sql) 
+<cx_Oracle.Cursor on <cx_Oracle.Connection to ml0001@db20210112_low>>
+>>> print( cursor.fetchmany(5) )
+[('Session Count',), ('PQ QC Session Count',), ('PQ Slave Session Count',), 
+('Average Active Sessions',), ('Active Serial Sessions',)]
+>>> cursor.close() 
+>>> connection.close()
+>>> 
+
+
+-------------------------------------------------------------------------
+8. Work On A Project
+-------------------------------------------------------------------------
+
+video: 41:38 - 42:06
+
+Do this every time you work on the project.
+
+A. Open a terminal window.
+
+B. Set your Oracle environment:
+
+	export oic=~/Orainstantclient_19_8
+	export PATH=$oic:$PATH
+	export DYLD_LIBRARY_PATH=$oic
+	export TNS_ADMIN=~/OracleWallets/Wallet_DB20210112
+
+C. Activate the Miniconda environment
+
+	conda env list 
+	conda activate test01
+
+D. Change to your project directory
+
+	cd "/Users/cshallah/ML-Projects/test01"
+
+Your environment is all set. At this point you will probably either start
+python or your Jupyter Notebook session (which I have not discussed).
+
+
+-------------------------------------------------------------------------
+9. How To Uninstall Miniconda Software
+-------------------------------------------------------------------------
+
+video: 42:06 -  42:26
+
+Your project directory and its content is NOT affected by the below steps.
+
+https://docs.conda.io/en/latest/miniconda.html
+
+Scroll down until you see the "Uninstalling Anaconda or Miniconda" section
+Below is a combination of the doc and what I needed to do. Here is you will
+need to do:
+
+You need to find where miniconda has been installed and remove
+
+echo $CONDA_EXE
+	/Users/cshallah/opt/miniconda3/bin/conda
+cd /Users/cshallah/opt rm -rf miniconda3
+
+cd pwd
+	/Users/cshallah
+rm -rf miniconda ~/.condarc ~/.conda ~/.continuum
+
+This is optional:
+
+Edit ~/.bash_profile to remove the Miniconda directory from your PATH
+environment variable.
+
+
+--END.

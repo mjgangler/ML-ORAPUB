@@ -1,0 +1,95 @@
+Anomaly Detection System 1
+
+6-April-2021
+
+What Has Changed Document
+
+What Changed?
+
+1-Apr-2021 Changes
+
+- There are new command line checks for for either 'db' or 'email'. The 'check' has been
+  replaced by 'db'.
+
+- DB configuration file credential changes are detected, then used without stoping the
+  AD system from running. This allow you to dynamically change the database and user
+  without stoping and restarting.
+
+- If the AD system is unable to connect to or query from the DB, then system automatically
+  refreshes DB credential file, sleeps, then continues main loop. The thinking is, you
+  may want to intervine or are intervening, and we don't want to stop the sytem.
+
+- There is a new parameter, data_max_samples_modeled. This is the maximum number of
+  collected samples that will be used when creating the model. It's important to
+  understand that the raw data is never removed or archived. So, the restart file will
+  continue to grow and is unaffected by this parameter.
+  
+  If you want to reduce the size of the restart file, you will need to stop the system,
+  make any change you want in the restart file, then restart collection.
+
+  As with all parameters, this parameter can be changed (have fun!) and the effect will
+  be immediate.
+  
+- There are now two models available, Kmeans and Isolation Forest. They are very
+  different, though the plotted points appear in the same location. Why is that?
+
+- You can change the size of the charts and the point size using these parameters,
+    alert_chart_point_size_normal = 1
+    alert_chart_point_size_anom   = 500
+    alert_chart_width_inch        = 10.0
+    alert_chart_height_inch       = 8.0
+
+- The charts now show all anomalous points in magenta with the current sample in either
+  green or red. This allows you to see where and what the model considers anomalous,
+  which is great for adjusting and your learning.
+
+- The 3D chart orientation can be using using the parameters,
+    alert_chart_3D_elevate_angle    = -140.0
+    alert_chart_3D_horizontal_angle = 45.0
+
+- You can set the dimensional reduction model (PCA, ICA) with the parameter,
+  dim_reduce_model. This is how the plotted point location can be changed. Changing
+  this parameter does not affect anomaly detection because the reduced data is not
+  fed into the ML algorithm.
+  
+- All configuration file changes take affect just before the next sample. So, you
+  can experiment and quickly see the results.
+  
+
+24-Mar-2021 Changes
+- Alert emails is now available.
+- New configuration parameters to support the email alerting, AnomDetect.cfg
+- New parameter file for your email settings, AnomDetect_Email.py
+- Updated note and raw Python files, AnomDetect-1.ipynb and AnomDetect-1.py
+- No client/workstation email related changes are necessary!
+- All setup and deployment changes have been added to the
+  AnomDetect-Setup-1e.txt file.
+
+---------------------------------------------------
+What To Backup
+---------------------------------------------------
+
+AnomDetect_DB.py - Back yours up if you are not accessing the OraPub Oracle database.
+
+AnomDetect_Email.py - Back yours up because you will be using different emails than me.
+
+AnomDetect.cfg - Back yours up because there are new parameters.
+
+
+---------------------------------------------------
+Testing
+---------------------------------------------------
+
+Ensure the AnomDetect _DB.py and AnomDetect_Email.py files are set appropriately.
+
+Use the new AnomDetect.cfg file, not your current config file... there are too many
+new things to adjust.
+
+Work through the AnomDetect-Setup .txt file.
+
+Enjoy!
+
+Craig.
+
+--END.
+
