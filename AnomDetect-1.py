@@ -39,7 +39,7 @@ lastCodeUpdate = '1-April-2021' # ref: what-has-changed.txt
 
 
 Testing    = False
-InNotebook = True
+InNotebook = False
 CmdCheck   = '' # Only used if InNotebook, then normally, set to '' or to do a check, set to either 'db' or 'email'
 
 

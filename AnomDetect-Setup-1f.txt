@@ -103,7 +103,7 @@ Create and Activate a new Miniconda environment, anom-detect-1
 	
 		conda create --name anom-detect-1 python=3.8
 		conda activate anom-detect-1
- 	        conda install ConfigParser scikit-learn matplotlib cx_oracle numpy pandas jupyter
+		conda install ConfigParser scikit-learn matplotlib cx_oracle numpy pandas jupyter 	
 
 -----
 Get Anomaly Detection Files
@@ -327,7 +327,7 @@ Activate your conda environment
 -----
 Edit AnomDect-1.py, AnomDetect.cfg, AnomDetect_DB.py and AnomDetect_Email.py
 
-   :wq 1. AnomDect-1.py. Probably the only change in AnomDect-1.py, near the top,
+    1. AnomDect-1.py. Probably the only change in AnomDect-1.py, near the top,
 			Testing    = False
 			InNotebook = False
 			CmdCheck   = ''
