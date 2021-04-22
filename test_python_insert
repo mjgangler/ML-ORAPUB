@@ -1,0 +1,18 @@
+user='slob002'
+pw ='dky6hgQcrM74'
+dsn ='db202104071520_high'
+import cx_Oracle 
+print('Connection (user pw dsn):', user, pw, dsn) 
+connection = cx_Oracle.connect(user, pw, dsn) 
+print('DB version:', connection.version) 
+cursor = connection.cursor() 
+# construct an insert statement that add a new row to the billing_headers table
+sql1 = ('insert into test_sysmetric select * from sys.gv_$con_sysmetric ')
+sql3 = "commit"
+sql2 = "select metric_name from sys.gv_$con_sysmetric" 
+cursor.execute(sql1) 
+cursor.execute(sql3) 
+cursor.execute(sql2) 
+print( cursor.fetchmany(5) ) 
+cursor.close() 
+connection.close()
