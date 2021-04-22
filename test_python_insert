@@ -1,6 +1,6 @@
 user='slob002'
-pw ='dky6hgQcrM74'
-dsn ='db202104071520_high'
+pw ='xxxxxxxxx'
+dsn ='xxxxx_high'
 import cx_Oracle 
 print('Connection (user pw dsn):', user, pw, dsn) 
 connection = cx_Oracle.connect(user, pw, dsn) 
