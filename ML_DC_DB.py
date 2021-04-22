@@ -1,5 +1,5 @@
 user = "ml0002"
-pw = "5232)pi9OPqE"
+pw = "xxxxxxxxxxx"
 dsn = "db20210112_low"
 
 #user = "op1"
